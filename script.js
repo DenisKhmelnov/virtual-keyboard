@@ -22,13 +22,18 @@ const Keyboard = {
 
     //Setup main element
     this.elements.main.classList.add("keyboard");
-    this.elements.keysContainer.classList.add("keyboard_keys");
+    this.elements.keysContainer.classList.add("keyboard__keys");
+    this.elements.keysContainer.appendChild(this._createKeys());
+
+    this.elements.keys =
+      this.elements.keysContainer.querySelectorAll(".keyboard__key");
 
     //Add to DOM
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
   },
 
+  //Generating key elements
   _createKeys() {
     const fragment = document.createDocumentFragment();
     const keyLayout = [
@@ -64,7 +69,6 @@ const Keyboard = {
       "k",
       "l",
       "enter",
-      "done",
       "z",
       "x",
       "c",
@@ -134,7 +138,7 @@ const Keyboard = {
           });
 
           break;
-        case "spacebar":
+        case "space":
           keyElement.classList.add("keyboard__key--extra-wide");
           keyElement.innerHTML = createIconHTML("space_bar");
 
@@ -154,13 +158,35 @@ const Keyboard = {
               : key.toLocaleLowerCase();
             this._triggerEvent("oninput");
           });
+
+          break;
+      }
+
+      fragment.appendChild(keyElement);
+
+      //If we need line break
+
+      if (insertLineBreak) {
+        fragment.appendChild(document.createElement("br"));
       }
     });
+
+    return fragment;
   },
 
   _triggerEvent(handlerName) {},
 
-  _toggleCapsLock() {},
+  _toggleCapsLock() {
+    this.properties.capsLock = !this.properties.capsLock;
+
+    for (const key of this.elements.keys) {
+      if (key.childElementCount === 0) {
+        key.textContent = this.properties.capsLock
+          ? key.textContent.toUpperCase()
+          : key.textContent.toLowerCase();
+      }
+    }
+  },
 
   open() {},
 
