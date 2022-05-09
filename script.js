@@ -29,8 +29,23 @@ const Keyboard = {
       this.elements.keysContainer.querySelectorAll(".keyboard__key");
 
     //Add to DOM
+    //Create text area
+    const textArea = document.createElement("textarea");
+    textArea.classList.add("use-keyboard-input");
+    document.body.appendChild(textArea);
+
+    //Append keyboard element
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
+
+    //Use keyboard to show input on textarea
+    document.querySelectorAll(".use-keyboard-input").forEach((element) => {
+      element.addEventListener("focus", () => {
+        this.open(element.value, (currentValue) => {
+          element.value = currentValue;
+        });
+      });
+    });
   },
 
   //Generating key elements
@@ -174,7 +189,11 @@ const Keyboard = {
     return fragment;
   },
 
-  _triggerEvent(handlerName) {},
+  _triggerEvent(handlerName) {
+    if (typeof this.eventHandlers[handlerName] == "function") {
+      this.eventHandlers[handlerName](this.properties.value);
+    }
+  },
 
   _toggleCapsLock() {
     this.properties.capsLock = !this.properties.capsLock;
@@ -188,7 +207,10 @@ const Keyboard = {
     }
   },
 
-  open() {},
+  open(initialValue, oninput) {
+    this.properties.value = initialValue || "";
+    this.eventHandlers.oninput = oninput;
+  },
 
   close() {},
 };
